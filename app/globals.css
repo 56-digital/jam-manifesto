@@ -84,13 +84,13 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 }
 
 /* ── Suggestion highlights ────────────────────────── */
-mark[data-suggestion-id] {
+mark[data-suggestion-ids] {
   background: rgba(255, 230, 0, 0.35);
   border-radius: 2px;
   cursor: pointer;
   transition: background 0.15s;
 }
-mark[data-suggestion-id]:hover {
+mark[data-suggestion-ids]:hover {
   background: rgba(255, 210, 0, 0.6);
 }
 

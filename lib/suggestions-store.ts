@@ -13,6 +13,7 @@ export interface Suggestion {
 interface SuggestionsState {
   suggestions: Suggestion[]
   addSuggestion: (s: Omit<Suggestion, 'id' | 'createdAt'>) => void
+  updateSuggestion: (id: string, text: string) => void
   removeSuggestion: (id: string) => void
   clearAll: () => void
 }
@@ -32,6 +33,13 @@ export const useSuggestionsStore = create<SuggestionsState>()(
               createdAt: Date.now(),
             },
           ],
+        })),
+
+      updateSuggestion: (id, text) =>
+        set((state) => ({
+          suggestions: state.suggestions.map((s) =>
+            s.id === id ? { ...s, suggestion: text } : s,
+          ),
         })),
 
       removeSuggestion: (id) =>
