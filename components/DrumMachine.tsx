@@ -342,7 +342,7 @@ export function DrumMachine() {
       octaves: 1.5,
     })
     hat.frequency.value = 400
-    hat.volume.value = -14
+    hat.volume.value = -20
     hat.connect(masterRef.current)
     hatRef.current = hat
 
