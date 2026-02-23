@@ -247,19 +247,19 @@ export function DrumMachine() {
     const Tone = await import('tone')
     Tone.getTransport().bpm.value = 140
 
-    // Full grid from 32nd notes to 2 bars — wide spread for Ikeda-style variance
+    // 32nd note grid up to 1 bar — every voice fires regularly, rhythm varies wildly
     const intervals = [
-      '32n', '32n', '32n',         // bias toward fast
-      '16n', '16n', '16n', '16n',  // most common
-      '16t', '8t', '4t',           // triplet subdivisions
+      '32n', '32n',
+      '16n', '16n', '16n',
+      '16t', '8t', '4t',
       '8n', '8n.',
       '4n', '4n.',
       '2n', '2n.',
-      '1m', '2m',                  // very slow — long silences
+      '1m',
     ]
 
-    const rand  = (a: number, b: number) => a + Math.random() * (b - a)
-    const pick  = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
+    const rand = (a: number, b: number) => a + Math.random() * (b - a)
+    const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
     const parts: any[] = []
 
@@ -271,26 +271,21 @@ export function DrumMachine() {
       env.connect(gate.gain)
       gate.gain.value = 0
 
-      // Ikeda: attacks are near-zero (clinical precision), decays vary wildly
-      env.attack  = rand(0.0005, 0.004)
-      env.decay   = pick([0.01, 0.015, 0.02, 0.04, 0.08, 0.15, 0.3, 0.6])
+      // Clinical Ikeda precision: near-zero attack, sharp decay, no sustain
+      env.attack  = rand(0.0005, 0.003)
+      env.decay   = pick([0.008, 0.012, 0.02, 0.035, 0.06, 0.12, 0.25, 0.5])
       env.sustain = 0
-      env.release = 0.005
+      env.release = 0.004
 
+      // Every voice has a primary interval it fires on — this ensures all freqs are heard
       const interval = pick(intervals)
 
-      // Probability is very skewed — most voices are mostly silent
-      // A few are dense, creating sudden bursts against long gaps
-      const r = Math.random()
-      const probability = r < 0.3
-        ? rand(0.05, 0.15)   // very sparse — long silences
-        : r < 0.7
-          ? rand(0.2, 0.45)  // mid — occasional hits
-          : rand(0.6, 0.95)  // dense — rapid bursts
+      // Probability stays high enough that every voice is audible — randomness is in
+      // the rhythm/interval, not in whether it fires at all
+      const probability = rand(0.65, 1.0)
 
-      // Stagger starts across 2 bars so onset is scattered, not a wall
-      const offsetSteps = Math.floor(Math.random() * 32)
-      const offset = `${offsetSteps}*32n`
+      // Stagger starts across one bar of 32nd notes
+      const offset = `${Math.floor(Math.random() * 32)}*32n`
 
       const loop = new (Tone.Loop as any)((time: number) => {
         if (Math.random() < probability) {
