@@ -245,12 +245,21 @@ export function DrumMachine() {
     envelopesOnRef.current = true
 
     const Tone = await import('tone')
-    const bpm = 140
-    Tone.getTransport().bpm.value = bpm
+    Tone.getTransport().bpm.value = 140
 
-    // Valid Tone.js interval strings — multiples of a 16th note
-    const intervals = ['2n', '2n.', '4n', '4n.', '2t', '4t', '8n', '8n.']
-    const rand = (a: number, b: number) => a + Math.random() * (b - a)
+    // Full grid from 32nd notes to 2 bars — wide spread for Ikeda-style variance
+    const intervals = [
+      '32n', '32n', '32n',         // bias toward fast
+      '16n', '16n', '16n', '16n',  // most common
+      '16t', '8t', '4t',           // triplet subdivisions
+      '8n', '8n.',
+      '4n', '4n.',
+      '2n', '2n.',
+      '1m', '2m',                  // very slow — long silences
+    ]
+
+    const rand  = (a: number, b: number) => a + Math.random() * (b - a)
+    const pick  = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
     const parts: any[] = []
 
@@ -262,15 +271,26 @@ export function DrumMachine() {
       env.connect(gate.gain)
       gate.gain.value = 0
 
-      env.attack  = rand(0.005, 0.02)
-      env.decay   = rand(0.12, 0.35)
+      // Ikeda: attacks are near-zero (clinical precision), decays vary wildly
+      env.attack  = rand(0.0005, 0.004)
+      env.decay   = pick([0.01, 0.015, 0.02, 0.04, 0.08, 0.15, 0.3, 0.6])
       env.sustain = 0
-      env.release = rand(0.08, 0.2)
+      env.release = 0.005
 
-      const interval   = intervals[Math.floor(Math.random() * intervals.length)]
-      const probability = rand(0.4, 0.75)
-      // stagger start times so voices don't all slam on beat 1
-      const offset = `${Math.floor(Math.random() * 8)}*16n`
+      const interval = pick(intervals)
+
+      // Probability is very skewed — most voices are mostly silent
+      // A few are dense, creating sudden bursts against long gaps
+      const r = Math.random()
+      const probability = r < 0.3
+        ? rand(0.05, 0.15)   // very sparse — long silences
+        : r < 0.7
+          ? rand(0.2, 0.45)  // mid — occasional hits
+          : rand(0.6, 0.95)  // dense — rapid bursts
+
+      // Stagger starts across 2 bars so onset is scattered, not a wall
+      const offsetSteps = Math.floor(Math.random() * 32)
+      const offset = `${offsetSteps}*32n`
 
       const loop = new (Tone.Loop as any)((time: number) => {
         if (Math.random() < probability) {
