@@ -36,8 +36,6 @@ export function Annotate({ term, children }: AnnotateProps) {
     <span
       ref={spanRef}
       className="annotate-term"
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
       onClick={handleClick}
       style={{
         borderBottom: '1px dotted #666',
@@ -61,7 +59,7 @@ export function Annotate({ term, children }: AnnotateProps) {
             lineHeight: '1.5',
             fontStyle: 'normal',
             fontWeight: 'normal',
-            maxWidth: '320px',
+            maxWidth: 'calc(100vw - 40px)',
             width: 'max-content',
             marginBottom: '8px',
             zIndex: 1000,
@@ -70,19 +68,6 @@ export function Annotate({ term, children }: AnnotateProps) {
           }}
         >
           {definition}
-          <span
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 0,
-              height: 0,
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid #1a1a1a'
-            }}
-          />
         </span>
       )}
     </span>
