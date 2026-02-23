@@ -368,13 +368,13 @@ export function DrumMachine() {
 
     const noise  = new (Tone.Noise as any)('white')
     const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 400 })
-    const gain   = new (Tone.Gain as any)(0.18)
+    const gain   = new (Tone.Gain as any)(0.09)
 
     noise.connect(filter)
     filter.connect(gain)
     gain.connect(masterRef.current)
 
-    const lfo = new (Tone.LFO as any)({ frequency: 0.12, min: 200, max: 8000 }).start()
+    const lfo = new (Tone.LFO as any)({ frequency: 0.12, min: 200, max: 8000, phase: 270, type: 'sine' }).start()
     lfo.connect(filter.frequency)
 
     noise.start()
