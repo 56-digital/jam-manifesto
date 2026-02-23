@@ -11,23 +11,34 @@ interface AnnotateProps {
 export function Annotate({ term, children }: AnnotateProps) {
   const [showTooltip, setShowTooltip] = useState(false)
   const spanRef = useRef<HTMLSpanElement>(null)
+  const [topPosition, setTopPosition] = useState<number | undefined>()
 
   const definition = definitions[term.toLowerCase()]
 
   useEffect(() => {
-    if (!showTooltip) return
+    if (!showTooltip || !spanRef.current) return
 
-    const handleClickOutside = (event: MouseEvent) => {
+    const isMobile = window.innerWidth < 768
+    if (isMobile) {
+      const rect = spanRef.current.getBoundingClientRect()
+      setTopPosition(rect.top - 10)
+    }
+
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (spanRef.current && !spanRef.current.contains(event.target as Node)) {
         setShowTooltip(false)
       }
     }
 
     document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
   }, [showTooltip])
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
     setShowTooltip(!showTooltip)
   }
@@ -39,6 +50,7 @@ export function Annotate({ term, children }: AnnotateProps) {
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onClick={handleClick}
+      onTouchStart={handleClick}
       style={{
         borderBottom: '1px dotted #666',
         cursor: 'help',
@@ -47,43 +59,15 @@ export function Annotate({ term, children }: AnnotateProps) {
     >
       {children}
       {showTooltip && definition && (
-        <span
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#1a1a1a',
-            color: '#fff',
-            padding: '10px 14px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            lineHeight: '1.5',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            maxWidth: '320px',
-            width: 'max-content',
-            marginBottom: '8px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            pointerEvents: 'none'
-          }}
-        >
-          {definition}
+        <>
           <span
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 0,
-              height: 0,
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid #1a1a1a'
-            }}
-          />
-        </span>
+            className="annotate-tooltip"
+            style={topPosition !== undefined ? { top: `${topPosition}px`, bottom: 'auto', transform: 'translateY(-100%)' } : {}}
+          >
+            {definition}
+          </span>
+          <span className="annotate-triangle" />
+        </>
       )}
     </span>
   )
