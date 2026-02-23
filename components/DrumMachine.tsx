@@ -430,7 +430,7 @@ export function DrumMachine() {
         </button>
       )}
 
-      <div style={{
+      <div data-no-suggestions style={{
         background: '#fff',
         border:     `4px solid ${FG}`,
         margin:     '40px auto',
