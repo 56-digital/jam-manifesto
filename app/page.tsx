@@ -1,5 +1,5 @@
-import ManifestoV3 from './manifesto-v3.mdx'
+import ManifestoV4 from "./manifesto-v4.mdx";
 
 export default function Page() {
-  return <ManifestoV3 />
+  return <ManifestoV4 />;
 }

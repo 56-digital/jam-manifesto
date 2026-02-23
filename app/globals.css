@@ -39,6 +39,15 @@ em { font-style: italic; color: #1a2535; }
 a { color: #273141; }
 hr { border: none; margin: 48px 0; }
 
+/* ── Editorial notes ───────────────────────────────── */
+.note {
+  background: #fef9e7;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 13px;
+  color: #7a6c2a;
+}
+
 button { font-family: var(--font-sans); cursor: pointer; }
 input[type='range'] { cursor: pointer; accent-color: #273141; }
 ::placeholder { color: #5a6e7e; }
