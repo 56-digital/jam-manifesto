@@ -99,9 +99,16 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 }
 
 /* Annotation tooltips */
+.annotate-term {
+  border-bottom: 1px dotted #666;
+  cursor: help;
+  position: relative;
+  display: inline;
+}
+
 .annotate-tooltip {
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
   background-color: #1a1a1a;
@@ -112,17 +119,25 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
   line-height: 1.5;
   font-style: normal;
   font-weight: normal;
-  max-width: calc(100vw - 40px);
-  width: max-content;
-  margin-bottom: 8px;
+  width: 260px;
+  white-space: normal;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   pointer-events: none;
 }
 
+.annotate-tooltip.mobile {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  width: auto;
+  max-width: none;
+  bottom: auto;
+}
+
 .annotate-triangle {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
@@ -130,20 +145,5 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-top: 6px solid #1a1a1a;
-}
-
-@media (max-width: 767px) {
-  .annotate-tooltip {
-    position: fixed;
-    left: 20px;
-    right: 20px;
-    bottom: auto;
-    transform: none;
-    width: auto;
-    max-width: none;
-  }
-
-  .annotate-triangle {
-    display: none;
-  }
+  pointer-events: none;
 }
