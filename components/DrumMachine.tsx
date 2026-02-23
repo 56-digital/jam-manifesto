@@ -248,8 +248,8 @@ export function DrumMachine() {
     const bpm = 140
     Tone.getTransport().bpm.value = bpm
 
-    const baseNote = '16n'
-    const ratioSet = [1, 2, 3, 5, 7, 9, 11, 13]
+    // Valid Tone.js interval strings — multiples of a 16th note
+    const intervals = ['2n', '2n.', '4n', '4n.', '2t', '4t', '8n', '8n.']
     const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
     const parts: any[] = []
@@ -262,23 +262,22 @@ export function DrumMachine() {
       env.connect(gate.gain)
       gate.gain.value = 0
 
-      env.attack  = rand(0.002, 0.02)
-      env.decay   = rand(0.05, 0.18)
-      env.release = rand(0.05, 0.3)
+      env.attack  = rand(0.005, 0.02)
+      env.decay   = rand(0.12, 0.35)
+      env.sustain = 0
+      env.release = rand(0.08, 0.2)
 
-      const ratio      = i === 0 ? 13 : ratioSet[Math.floor(Math.random() * ratioSet.length)]
-      const probability = i === 0 ? rand(0.35, 0.55) : rand(0.7, 1.0)
-      const interval   = `${ratio}*${baseNote}`
-
-      // fire once immediately
-      env.triggerAttackRelease(0.08)
+      const interval   = intervals[Math.floor(Math.random() * intervals.length)]
+      const probability = rand(0.4, 0.75)
+      // stagger start times so voices don't all slam on beat 1
+      const offset = `${Math.floor(Math.random() * 8)}*16n`
 
       const loop = new (Tone.Loop as any)((time: number) => {
         if (Math.random() < probability) {
-          env.triggerAttackRelease(0.08, time)
+          env.triggerAttackRelease(env.decay, time)
         }
       }, interval)
-      loop.start(0)
+      loop.start(offset)
       parts.push(loop)
     }
 
