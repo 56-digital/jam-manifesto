@@ -35,7 +35,7 @@ html, body {
 h1, h2, h3 { font-weight: 500; }
 h1 { font-size: 28px; margin-bottom: 8px; letter-spacing: -0.01em; }
 h2 { font-size: 12px; color: #4a5d6d; margin: 64px 0 20px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 400; }
-p { color: #273141; margin-bottom: 10px; }
+p { color: #273141; margin-bottom: 20px; }
 em { font-style: italic; color: #1a2535; }
 a { color: #273141; }
 hr { border: none; margin: 48px 0; }
