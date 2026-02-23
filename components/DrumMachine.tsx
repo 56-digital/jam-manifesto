@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
 import { unlockAudio } from '@/lib/audio-unlock'
-import { useMusicStore } from '@/lib/music-store'
 
 const FG = '#273141'
 const DIM = '#7c8c96'
@@ -66,8 +65,6 @@ export function DrumMachine() {
   const [loading, setLoading] = useState(false)
   const [gains,   setGains]   = useState<number[]>(INITIAL_GAINS)
   const [isMuted, setIsMuted] = useState(false)
-  const audioReady = useMusicStore((s) => s.audioReady)
-
   const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
   const [messages, setMessages] = useState<Message[]>(() => [
@@ -453,35 +450,6 @@ export function DrumMachine() {
         userSelect: 'none',
         position:   'relative',
       }}>
-        {!audioReady && phase === 0 && (
-          <div
-            style={{
-              position:       'absolute',
-              inset:          0,
-              zIndex:         10,
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'center',
-              background:     'rgba(255,255,255,0.85)',
-              cursor:         'pointer',
-            }}
-            onClick={async () => {
-              await unlockAudio()
-            }}
-          >
-            <span style={{
-              fontSize:      '11px',
-              color:         FG,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              border:        `1px solid ${FG}`,
-              padding:       '8px 16px',
-            }}>
-              tap to enable audio
-            </span>
-          </div>
-        )}
-
         <div className="dm-disclaimer">WORKFLOW SIMULATION</div>
         <div className="dm-panel">
           <div className="dm-chat">

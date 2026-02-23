@@ -55,7 +55,7 @@ export function AgentTerminal() {
   const bottomRef                     = useRef<HTMLDivElement>(null)
   const applyPreset  = useMusicStore((s) => s.applyPreset)
   const setPlaying   = useMusicStore((s) => s.setPlaying)
-  const audioReady   = useMusicStore((s) => s.audioReady)
+  const audioReady   = useMusicStore((s) => s.audioReady) // gates auto-demo audio
 
   const { displayed, done } = useTypewriter(autoRunning ? autoPrompt : '', 32)
 
@@ -117,38 +117,6 @@ export function AgentTerminal() {
       margin: '40px 0',
       position: 'relative',
     }}>
-      {!audioReady && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(255,255,255,0.85)',
-            cursor: 'pointer',
-          }}
-          onClick={async () => {
-            await unlockAudio()
-            const current = PROMPTS[autoIdx]
-            applyPreset(current.preset)
-            setPlaying(true)
-          }}
-        >
-          <span style={{
-            fontSize: '11px',
-            color: FG,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            border: `1px solid ${FG}`,
-            padding: '8px 16px',
-          }}>
-            tap to enable audio
-          </span>
-        </div>
-      )}
-
       <div style={{
         padding: '8px 14px',
         borderBottom: `1px solid ${BORDER}`,
