@@ -27,7 +27,8 @@ html, body {
   color: #273141;
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.7;
+  letter-spacing: 0.018em;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -68,7 +69,7 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 .manifesto > ol,
 .manifesto > blockquote,
 .manifesto > .eyebrow {
-  max-width: 680px;
+  max-width: 580px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 24px;
@@ -79,8 +80,14 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 .manifesto > img {
   width: 100%;
   display: block;
-  margin: 32px 0;
+  margin: 80px 0;
   border: 4px solid #273141;
+}
+
+/* Interactive components — extra breathing room */
+.manifesto > div {
+  margin-top: 80px;
+  margin-bottom: 80px;
 }
 
 /* Full-width checkerboard HR — 2 rows of 8px squares */
@@ -88,5 +95,5 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
   width: 100%;
   height: 16px;
   background: conic-gradient(#273141 90deg, #fff 90deg 180deg, #273141 180deg 270deg, #fff 270deg) 0 0 / 16px 16px;
-  margin: 48px 0;
+  margin: 96px 0;
 }
