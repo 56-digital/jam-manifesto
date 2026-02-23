@@ -1,33 +1,47 @@
-// iOS Safari requires AudioContext.resume() to be called synchronously
-// within a user gesture handler. Dynamic import() is async, so we pre-load
-// Tone eagerly on mount. Then the actual Tone.start() call in the gesture
-// handler hits an already-resolved module — no async gap.
+// iOS Safari requires AudioContext.resume() to be called in the synchronous
+// portion of a user gesture — before ANY await. The pattern here:
+//
+// 1. primeAudio() — called on mount, pre-loads Tone and music-store modules
+//    so they are cached and their imports resolve instantly (microtask, not
+//    a full async gap).
+// 2. unlockAudio() — resumes the native AudioContext SYNCHRONOUSLY before
+//    doing anything else. Tone.start() is async internally but the underlying
+//    ctx.resume() fires synchronously. We also pre-cache the music-store
+//    module so the setAudioReady call has no dynamic import delay.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let toneModule: any = null
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let storeModule: any = null
 
 export function primeAudio() {
-  if (typeof window === 'undefined' || toneModule) return
-  import('tone').then((m) => { toneModule = m })
+  if (typeof window === 'undefined') return
+  if (!toneModule) import('tone').then((m) => { toneModule = m })
+  if (!storeModule) import('./music-store').then((m) => { storeModule = m })
 }
 
-// Call this synchronously inside a click/touchstart handler.
-// Returns a promise that resolves once the context is running.
 export async function unlockAudio(): Promise<void> {
   if (typeof window === 'undefined') return
 
-  // If not yet loaded (first ever call with no priming), load now.
-  // On iOS this async gap means it may not work the very first time,
-  // but primeAudio() called on mount eliminates this case in practice.
-  if (!toneModule) {
-    toneModule = await import('tone')
+  // Ensure modules are loaded — if primeAudio() ran on mount these resolve
+  // from the module cache (microtask, not a real async gap)
+  if (!toneModule)  toneModule  = await import('tone')
+  if (!storeModule) storeModule = await import('./music-store')
+
+  // Resume the underlying native AudioContext synchronously.
+  // Tone wraps the native ctx — calling resume() on it directly satisfies
+  // iOS Safari's gesture requirement without waiting for Tone's own promises.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nativeCtx = toneModule.getContext().rawContext as AudioContext
+  if (nativeCtx.state === 'suspended') {
+    // fire-and-forget the native resume — this is the synchronous gesture hook
+    nativeCtx.resume()
   }
 
-  const ctx = toneModule.getContext()
-  if (ctx.state !== 'running') {
+  // Now do the full Tone.start() which sets up Tone's internal state
+  if (toneModule.getContext().state !== 'running') {
     await toneModule.start()
   }
 
-  const { useMusicStore } = await import('./music-store')
-  useMusicStore.getState().setAudioReady(true)
+  storeModule.useMusicStore.getState().setAudioReady(true)
 }

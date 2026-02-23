@@ -314,6 +314,7 @@ export function DrumMachine() {
       octaves: 6,
       envelope: { attack: 0.001, decay: 0.4, sustain: 0, release: 0.1 },
     })
+    kick.volume.value = -6
     kick.connect(masterRef.current)
     kickRef.current = kick
 
@@ -366,14 +367,14 @@ export function DrumMachine() {
     const Tone = await import('tone')
 
     const noise  = new (Tone.Noise as any)('white')
-    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 300 })
-    const gain   = new (Tone.Gain as any)(0.03)
+    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 400 })
+    const gain   = new (Tone.Gain as any)(0.18)
 
     noise.connect(filter)
     filter.connect(gain)
     gain.connect(masterRef.current)
 
-    const lfo = new (Tone.LFO as any)({ frequency: 0.03, min: 150, max: 2000 }).start()
+    const lfo = new (Tone.LFO as any)({ frequency: 0.12, min: 200, max: 8000 }).start()
     lfo.connect(filter.frequency)
 
     noise.start()
