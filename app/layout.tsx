@@ -3,7 +3,7 @@ import "./globals.css";
 import { MusicProvider } from "@/components/MusicProvider";
 
 export const metadata: Metadata = {
-  title: "J",
+  title: "Drone Circle",
   description:
     "An agentic music system — natural language meets modular synthesis",
 };

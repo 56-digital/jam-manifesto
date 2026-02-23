@@ -1,33 +1,35 @@
 export const definitions: Record<string, string> = {
-  'attenuator': 'A volume knob for signals. It reduces the strength of a signal without changing its character, like turning down the brightness of a light.',
+  'modular synthesizers': 'Electronic instruments you build yourself by connecting modules with cables, where each module does one job. Independent function blocks (oscillation, filtering, modulation) with user-defined signal routing rather than hardwired paths.',
 
-  'karlheinz stockhausen': 'A German composer who worked in the 1950s-60s pioneering electronic music. He was one of the first to treat sound itself as a material you could shape and sculpt.',
+  'attenuator': 'A volume knob for signals without changing their character. Reduces signal amplitude (voltage level) without affecting frequency content or waveform shape.',
 
-  'daphne oram': 'A British composer and inventor who built machines to turn drawings into sound. She left the BBC to pursue electronic music and founded her own studio.',
+  'karlheinz stockhausen': 'German composer who pioneered shaping electronic sound as a sculptable material in the 1950s-60s. Worked at WDR Cologne developing serialism applied to electronic sound, spatial audio composition, and algorithmic techniques.',
 
-  'oscillator': 'A device that produces a repeating wave of sound. Think of it as the basic voice or tone generator. Multiple oscillators at different pitches create harmony or texture.',
+  'daphne oram': 'British composer who built machines to turn drawings directly into sound. Co-founded BBC Radiophonic Workshop, then created Oramics—synthesizing sound from hand-drawn waveforms on film using photoelectric cells.',
 
-  'audio filter': 'A tool that lets certain frequencies through while blocking others. Like adjusting treble and bass on a stereo, but more precise and flexible.',
+  'oscillator': 'The basic tone generator in a synthesizer—it makes a repeating wave at a specific pitch. Circuit producing periodic waveforms (sine, triangle, sawtooth, square) at controllable frequencies.',
 
-  'envelope': 'The shape of a sound over time—how it starts, holds, and fades. A piano has a sharp attack then fades. A violin can swell gradually.',
+  'audio filter': 'Lets certain frequencies through while blocking others, like adjusting treble and bass but more precise. Frequency-selective circuit with types including low-pass, high-pass, band-pass, and notch. Resonance (Q) emphasizes frequencies near cutoff.',
 
-  'envelope filter': 'A filter that responds to how loud you play. Hit harder and the sound gets brighter. Play softer and it gets darker. It follows the dynamics of your performance.',
+  'envelope': 'The shape of a sound over time—how it attacks, holds, and fades away. Time-varying control signal structured as ADSR (Attack, Decay, Sustain, Release) defining amplitude or timbre contour.',
 
-  'control voltage': 'A signal that controls other signals. Instead of making sound, it tells other modules what to do—like using one knob to automatically adjust several others.',
+  'envelope filter': 'A filter that opens when you play louder and closes when you play softer, following your dynamics. Voltage-controlled filter where cutoff frequency tracks the input amplitude envelope, creating touch-sensitive timbral response.',
 
-  'wdr': 'West German Radio (Westdeutscher Rundfunk). Their electronic music studio in Cologne became a legendary place where composers experimented with tape and early synthesizers.',
+  'control voltage': 'A signal that tells other modules what to do instead of making sound itself. Analog voltage (typically 0-10V or ±5V) used to modulate parameters. Standard is one volt per octave for pitch control.',
 
-  'spectrogram': 'A visual representation of sound that shows which frequencies are present over time. It lets you see what you hear—like reading sheet music, but for the actual sound waves.',
+  'wdr': 'West German Radio—their electronic music studio in Cologne became legendary for early synthesizer experiments. Studio für Elektronische Musik (founded 1951) where Stockhausen and others pioneered tape manipulation and oscillator bank composition.',
 
-  'amplitude': 'The loudness or intensity of a signal. Higher amplitude means louder sound, lower means quieter. It is the height of the wave.',
+  'spectrogram': 'A visual map showing which frequencies are present in a sound over time. Three-dimensional representation where x-axis is time, y-axis is frequency, and color/brightness indicates amplitude at each point.',
 
-  'lan': 'Local Area Network. A way to connect computers together in the same physical space using cables, so they can share data directly without the internet.',
+  'amplitude': 'How loud or strong a signal is—the height of the wave. Signal magnitude measured in voltage (analog) or sample value (digital). Measured in dB or linear scale as peak deviation from zero.',
 
-  'ethernet': 'The type of cable and connection standard used to link computers in a network. The physical cable that carries data between machines.',
+  'lan': 'A way to connect computers in the same room with cables so they talk directly to each other. Local Area Network using dedicated physical connections (typically ethernet) without routing through external networks.',
 
-  'switch': 'A box with multiple ethernet ports that lets many devices connect to the same network. It routes data between all the connected machines.',
+  'ethernet': 'The standard cable and connection type for wired networks. IEEE 802.3 protocol family using twisted-pair or fiber cables, defining physical and data link layers for packet transmission.',
 
-  'audio interface': 'Hardware that converts digital signals from a computer into analog sound you can hear through speakers, and vice versa. The bridge between computer and audio world.',
+  'switch': 'A box that intelligently routes network traffic between connected devices. OSI Layer 2 device forwarding ethernet frames using MAC address tables to route traffic only to destination ports.',
 
-  'equalizer': 'A tool for adjusting the balance of different frequencies in a sound. You can boost or reduce bass, midrange, or treble to shape how something sounds in a room.',
+  'audio interface': 'The bridge between your computer and the analog audio world of microphones and speakers. Hardware providing ADC/DAC conversion with mic preamps and line I/O, connecting via USB, Thunderbolt, or PCIe.',
+
+  'equalizer': 'Adjusts the balance of bass, midrange, and treble to shape how something sounds. Processor adjusting amplitude of frequency bands. Parametric EQs control center frequency, gain, and Q. Graphic EQs use fixed bands with faders.',
 }

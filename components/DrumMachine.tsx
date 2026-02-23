@@ -439,7 +439,7 @@ export function DrumMachine() {
         fontFamily: 'ui-monospace, monospace',
         userSelect: 'none',
       }}>
-        <div className="dm-disclaimer">Workflow simulated for this current draft WIP</div>
+        <div className="dm-disclaimer">WORKFLOW SIMULATION</div>
         <div className="dm-panel">
           {/* Left: chat */}
           <div className="dm-chat">

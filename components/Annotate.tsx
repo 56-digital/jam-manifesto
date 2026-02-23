@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { definitions } from '@/lib/definitions'
 
 interface AnnotateProps {
@@ -10,14 +10,35 @@ interface AnnotateProps {
 
 export function Annotate({ term, children }: AnnotateProps) {
   const [showTooltip, setShowTooltip] = useState(false)
+  const spanRef = useRef<HTMLSpanElement>(null)
 
   const definition = definitions[term.toLowerCase()]
 
+  useEffect(() => {
+    if (!showTooltip) return
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (spanRef.current && !spanRef.current.contains(event.target as Node)) {
+        setShowTooltip(false)
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showTooltip])
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setShowTooltip(!showTooltip)
+  }
+
   return (
     <span
+      ref={spanRef}
       className="annotate-term"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
+      onClick={handleClick}
       style={{
         borderBottom: '1px dotted #666',
         cursor: 'help',
@@ -38,6 +59,8 @@ export function Annotate({ term, children }: AnnotateProps) {
             borderRadius: '6px',
             fontSize: '13px',
             lineHeight: '1.5',
+            fontStyle: 'normal',
+            fontWeight: 'normal',
             maxWidth: '320px',
             width: 'max-content',
             marginBottom: '8px',
