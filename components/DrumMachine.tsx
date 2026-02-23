@@ -14,7 +14,10 @@ const FREQS = [600, 1800, 3000, 4200, 5400, 6600, 7800, 9000, 10200, 11400, 1260
 const A = 0.09
 const MAX_GAIN = A
 
-const INITIAL_GAINS = FREQS.map((_, i) => A / (2 * i + 1))
+const INITIAL_GAINS = FREQS.map((_, i) => {
+  const base = A / (2 * i + 1)
+  return i === 10 ? base * 2.8 : base
+})
 
 const BUILD_STEPS = [
   {
