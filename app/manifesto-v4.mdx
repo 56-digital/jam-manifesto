@@ -1,5 +1,6 @@
 import { DrumMachine } from '@/components/DrumMachine'
 import { MermaidDiagram } from '@/components/MermaidDiagram'
+import { Annotate } from '@/components/Annotate'
 
 <div className="manifesto">
 
@@ -9,9 +10,9 @@ import { MermaidDiagram } from '@/components/MermaidDiagram'
 
 ## I. The Ritual
 
-There is a slowness to patching modular synthesizers.
+There is a slowness to patching <Annotate term="modular synthesizers">modular synthesizers</Annotate>.
 
-I have a cable in my hand and imagine a signal path in my mind, then I plug the cable into the desired output. I listen carefully as each new connection changes the sound. I listen through a series of small decisions. I turn knobs and press buttons to manage the depth of the attenuator. I verify the signal is going where I want it to go by tracking the lights and cables.
+I have a cable in my hand and imagine a signal path in my mind, then I plug the cable into the desired output. I listen carefully as each new connection changes the sound. I listen through a series of small decisions, turn knobs and press buttons to manage the depth of the <Annotate term="attenuator">attenuator</Annotate>. Then, I verify the signal is going by tracking the lights and cables.
 
 The deliberate arrangement and re-arrangement of data from one point to another creates music. The slowness is not an artifact of the process. The slowness is the process.
 
@@ -19,7 +20,7 @@ The deliberate arrangement and re-arrangement of data from one point to another 
 
 You know that ritual. You love that ritual. There is something satisfying about the physicality of it, about the way working with constraints forces an intimacy with the system.
 
-You say out loud *cut the drums, add an envelope filter*. As you finish the sentence, the music starts changing. No cables or menus, the distance between the thought and the sound had collapsed to the length of a sentence.
+You say out loud *cut the drums, add an <Annotate term="envelope filter">envelope filter</Annotate>*. As you finish the sentence, the music starts changing. No cables or menus, the distance between the thought and the sound had collapsed to the length of a sentence.
 
 This feels genuinely surreal. Not like taking a shortcut, but like finally being understood by something that had been listening the whole time.
 
@@ -27,9 +28,9 @@ This feels genuinely surreal. Not like taking a shortcut, but like finally being
 
 Reducing the distance between what you can imagine and what you can make feels especially topical at the moment, but it has always been the central focus of creative technology.
 
-1950s Cologne Germany: Karlheinz Stockhausen described what felt like a breakthrough when he was working in an electronic music studio. He discovered the ability to *draw* a sound. That you could visually depict the shape of an envelope directly, sketch mountains on paper and watch them become the contour of sound as it moved through time. The shape was the sound. Notation had always been an approximation; but for the first time, the score and the result could be truly 1:1.
+1950s Cologne Germany: <Annotate term="karlheinz stockhausen">Karlheinz Stockhausen</Annotate> described what felt like a breakthrough when he was working in an electronic music studio. He discovered the ability to *draw* a sound. That you could visually depict the shape of an envelope directly, sketch mountains on paper and watch them become the contour of sound as it moved through time. The shape was the sound. Notation had always been an approximation; but the score and the result could be truly 1:1.
 
-Daphne Oram was working in similar problem spaces. In *An Individual Note of Music, Sound and Electronics*, she described what happens when you set a series of oscillators at different frequencies and let them interact: some cancel each other out and some reinforce. The math of inference becoming audible in a way that is both precise and deeply strange to listen to. Reading her description, I heard it clearly: all the oscillators, all of the relationships between them. Then I opened a blank patch and started clicking.
+<Annotate term="daphne oram">Daphne Oram</Annotate> was working in similar problem spaces. In *An Individual Note of Music, Sound and Electronics*, she described what happens when you set a series of <Annotate term="oscillator">oscillators</Annotate> at different frequencies and let them interact: some cancel each other out and some reinforce. The math of inference becoming audible in a way that is both precise and deeply strange to listen to. Reading her description, I heard it clearly: all the oscillators, all of the relationships between them. Then I opened a blank patch and started clicking.
 
 That is the distance.
 
@@ -40,9 +41,9 @@ Stockhausen compressed it by letting you draw. Oram spent a lifetime trying to c
 
 ## III. The Collapse
 
-The building blocks are the same ones that have existed since the first synthesizer: oscillators, filters, envelopes, buses, gates, control voltage. The same primitives that Stockhausen worked with at WDR, the same signal chain you would patch together by hand on a modular synth.
+The building blocks are the same ones that have existed since the first synthesizer: oscillators, <Annotate term="audio filter">filters</Annotate>, <Annotate term="envelope">envelopes</Annotate>, buses, gates, <Annotate term="control voltage">control voltage</Annotate>. The same primitives that Stockhausen worked with at <Annotate term="wdr">WDR</Annotate>, the same signal chain you would patch together by hand on a modular synth.
 
-You say: *place 12 oscillators, stepped from 100Hz to 1 KHz in increments of 100.* They appear, connected, routed to the bus, audible immediately. Then: *add a spectrogram so I can see the frequencies as they interact.* It appears. Then: *give each one its own amplitude control, I want to be able to bring each frequency in and out independently.*
+You say: *place 12 oscillators, stepped from 100Hz to 1 KHz in increments of 100.* They appear, connected, routed to the bus, audible immediately. Then: *add a <Annotate term="spectrogram">spectrogram</Annotate> so I can see the frequencies as they interact.* It appears. Then: *give each one its own <Annotate term="amplitude">amplitude</Annotate> control, I want to be able to bring each frequency in and out independently.*
 
 What would have taken half an hour of manual configuration now takes less than a minute to describe and actually experience.
 
@@ -65,7 +66,7 @@ When something changes (a texture shifting across the room, or a sequence sudden
 
 What makes that quality of presence possible is not wireless, but through cables. Physical connections between physical machines; a patch cable running from one device to another, voltage moving through copper wire from one case to the next. You can see where your system ended and someone else's began. You can trace the signal path across the table with your finger.
 
-A LAN cable restores a version of that feeling. There is something about running a long ethernet cable across the floor and plugging it into a switch that makes the network visible. You can see where your machine enters it.
+A <Annotate term="lan">LAN</Annotate> cable restores a version of that feeling. There is something about running a long <Annotate term="ethernet">ethernet</Annotate> cable across the floor and plugging it into a <Annotate term="switch">switch</Annotate> that makes the network visible. You can see where your machine enters it.
 
 <MermaidDiagram chart={`graph TD
   HOST["host machine"]
@@ -92,7 +93,7 @@ A LAN cable restores a version of that feeling. There is something about running
 
 The installation is built around the choice to make the network visible.
 
-At the centre of the room is a single machine: a server connected to an audio interface, connected to an equalizer, connected to speakers. Everything that will be heard in the room passes through this machine first. It is the root of a nervous system, the point from which everything else branches.
+At the centre of the room is a single machine: a server connected to an <Annotate term="audio interface">audio interface</Annotate>, connected to an <Annotate term="equalizer">equalizer</Annotate>, connected to speakers. Everything that will be heard in the room passes through this machine first. It is the root of a nervous system, the point from which everything else branches.
 
 From a switch connected to the machine, ethernet cables run out across the floor to where people are located. 24 ports with 24 participants, each bringing a laptop to plug into the system. From the moment the cable is connected, their device is part of the network. Their voice, descriptions and commands travel from their machine to the switch in the central engine. From there, the machine interprets and changes the sound already happening in the room.
 
@@ -102,7 +103,7 @@ The cables are long. They are meant to be seen as you cross the floor, to give a
 
 The workshop runs across three days, designed to follow the learning arc of an instrument.
 
-On the first day, nobody knows what it sounds like. People arrive from different backgrounds with different knowledge and sensibilities. Some make music, some don't. Some write code, some don't, some kind-of do. The first hour is discussing and listening: what it means for everyone to be connected, what multiple people working in the same session would sound like, what the relationship is is between a description and a sound. Then the cables come out. Each person's device is connected; a soundcheck, a test, the first sounds. By the end of the day, something simple has been made collectively: a shared metronome allowing room to make noise together.
+On the first day, nobody knows what it sounds like. People arrive from different backgrounds with different knowledge and sensibilities. Some make music, some don't. Some write code, some don't, some kind-of do. The first hour is discussing and listening: what it means for everyone to be connected, what multiple people working in the same session would sound like, what the relationship is between a description and a sound. Then the cables come out. Each person's device is connected; a soundcheck, a test, the first sounds. By the end of the day, something simple has been made collectively: a shared metronome allowing room to make noise together.
 
 On the second day, people come back having slept on it. She will have kept running their instances overnight. There is a low-pressure atmosphere in the morning; everyone plugs in, no agenda, free jam. Then a brief showcase of unpolished work with group feedback. Knowledge sharing, exploration, *this worked, this didn't work*, etc.
 
