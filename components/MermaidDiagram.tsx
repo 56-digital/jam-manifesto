@@ -42,7 +42,6 @@ export function MermaidDiagram({ chart }: Props) {
   return (
     <div
       ref={ref}
-      data-no-suggestions
       style={{
         margin:      '40px 0',
         padding:     '32px 24px',
