@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useMusicStore, PRESETS } from '@/lib/music-store'
+import { unlockAudio } from '@/lib/audio-unlock'
 
 const FG  = '#273141'
 const DIM = '#7c8c96'
@@ -18,8 +19,9 @@ export function AgentPrompt({ prompt, preset, description }: Props) {
   const applyPreset = useMusicStore((s) => s.applyPreset)
   const setPlaying  = useMusicStore((s) => s.setPlaying)
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (state === 'applied') return
+    await unlockAudio()
     applyPreset(preset)
     setPlaying(true)
     setState('applied')

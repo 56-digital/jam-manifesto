@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Volume2, VolumeX } from 'lucide-react'
+import { unlockAudio } from '@/lib/audio-unlock'
+import { useMusicStore } from '@/lib/music-store'
 
 const FG = '#273141'
 const DIM = '#7c8c96'
@@ -64,12 +66,13 @@ export function DrumMachine() {
   const [loading, setLoading] = useState(false)
   const [gains,   setGains]   = useState<number[]>(INITIAL_GAINS)
   const [isMuted, setIsMuted] = useState(false)
+  const audioReady = useMusicStore((s) => s.audioReady)
 
   const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
   const [messages, setMessages] = useState<Message[]>(() => [
-    { id: newId(), role: 'user',  text: 'let’s run a session' },
-    { id: newId(), role: 'agent', text: 'it’s already running.' },
+    { id: newId(), role: 'user',  text: "let\u2019s run a session" },
+    { id: newId(), role: 'agent', text: "it\u2019s already running." },
   ])
 
   const chatScrollRef = useRef<HTMLDivElement>(null)
@@ -81,8 +84,6 @@ export function DrumMachine() {
   const gateRefs      = useRef<any[]>([])
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const envRefs       = useRef<any[]>([])
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const masterRef     = useRef<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,10 +98,12 @@ export function DrumMachine() {
   const noiseFilterRef = useRef<any>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const noiseLfoRef    = useRef<any>(null)
-  const gateTimersRef = useRef<number[]>([])
-  const kickTimerRef  = useRef<number | null>(null)
-  const hatTimerRef   = useRef<number | null>(null)
-  const noiseTimerRef = useRef<number | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const kickLoopRef   = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hatLoopRef    = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const polyPartsRef  = useRef<any[]>([])
   const envelopesOnRef = useRef(false)
   const noiseOnRef     = useRef(false)
 
@@ -158,7 +161,6 @@ export function DrumMachine() {
 
   const initAudio = useCallback(async () => {
     const Tone = await import('tone')
-    await Tone.start()
 
     const master = new (Tone.Gain as any)(1)
     master.toDestination()
@@ -207,10 +209,9 @@ export function DrumMachine() {
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    gateTimersRef.current.forEach((t) => clearInterval(t))
-    if (kickTimerRef.current) clearInterval(kickTimerRef.current)
-    if (hatTimerRef.current) clearInterval(hatTimerRef.current)
-    if (noiseTimerRef.current) clearInterval(noiseTimerRef.current)
+    polyPartsRef.current.forEach((p) => { try { p.stop(); p.dispose() } catch { /* */ } })
+    if (kickLoopRef.current) { try { kickLoopRef.current.stop(); kickLoopRef.current.dispose() } catch { /* */ } }
+    if (hatLoopRef.current)  { try { hatLoopRef.current.stop();  hatLoopRef.current.dispose()  } catch { /* */ } }
     if (kickRef.current) { try { kickRef.current.dispose() } catch { /* */ } }
     if (hatRef.current) { try { hatRef.current.dispose() } catch { /* */ } }
     if (noiseRef.current) { try { noiseRef.current.dispose() } catch { /* */ } }
@@ -240,47 +241,55 @@ export function DrumMachine() {
     if (masterRef.current) masterRef.current.gain.value = next ? 0 : 1
   }
 
-  // ── envelopes + polyrhythm ─────────────────────────────────────────────────-
+  // ── envelopes + polyrhythm (Tone.Transport-based) ──────────────────────────
 
-  const enableEnvelopesAndPolyrhythm = () => {
+  const enableEnvelopesAndPolyrhythm = async () => {
     if (envelopesOnRef.current) return
     envelopesOnRef.current = true
 
+    const Tone = await import('tone')
     const bpm = 140
-    const baseMs = (60_000 / bpm) / 4 // 16th-note grid
-    const ratioSet = [1, 2, 3, 5, 7, 9, 11, 13]
+    Tone.getTransport().bpm.value = bpm
 
+    const baseNote = '16n'
+    const ratioSet = [1, 2, 3, 5, 7, 9, 11, 13]
     const rand = (a: number, b: number) => a + Math.random() * (b - a)
 
-    gateTimersRef.current = FREQS.map((_, i) => {
-      const gate = gateRefs.current[i]
-      const env = envRefs.current[i]
-      if (!gate || !env) return 0 as unknown as number
+    const parts: any[] = []
 
-      // use envelope to modulate gate gain (preserves base amplitude)
+    for (let i = 0; i < FREQS.length; i++) {
+      const gate = gateRefs.current[i]
+      const env  = envRefs.current[i]
+      if (!gate || !env) continue
+
       env.connect(gate.gain)
       gate.gain.value = 0
 
-      // random envelope per oscillator
-      env.attack = rand(0.002, 0.02)
-      env.decay = rand(0.05, 0.18)
+      env.attack  = rand(0.002, 0.02)
+      env.decay   = rand(0.05, 0.18)
       env.release = rand(0.05, 0.3)
 
-      const ratio = i === 0 ? 13 : ratioSet[Math.floor(Math.random() * ratioSet.length)]
-      const interval = baseMs * ratio
+      const ratio      = i === 0 ? 13 : ratioSet[Math.floor(Math.random() * ratioSet.length)]
       const probability = i === 0 ? rand(0.35, 0.55) : rand(0.7, 1.0)
+      const interval   = `${ratio}*${baseNote}`
 
-      // fire immediately so all frequencies are audible
+      // fire once immediately
       env.triggerAttackRelease(0.08)
 
-      return window.setInterval(() => {
+      const loop = new (Tone.Loop as any)((time: number) => {
         if (Math.random() < probability) {
-          env.triggerAttackRelease(0.08)
+          env.triggerAttackRelease(0.08, time)
         }
       }, interval)
-    })
+      loop.start(0)
+      parts.push(loop)
+    }
+
+    polyPartsRef.current = parts
+    Tone.getTransport().start()
   }
 
+  // ── kick (Tone.Loop) ────────────────────────────────────────────────────────
 
   const startKick = async () => {
     if (kickRef.current || !masterRef.current) return
@@ -294,14 +303,18 @@ export function DrumMachine() {
     kick.connect(masterRef.current)
     kickRef.current = kick
 
-    const bpm = 140
-    const interval = 60_000 / bpm
+    const loop = new (Tone.Loop as any)((time: number) => {
+      kick.triggerAttackRelease('C1', '8n', time)
+    }, '4n')
+    loop.start(0)
+    kickLoopRef.current = loop
 
-    kick.triggerAttackRelease('C1', '8n')
-    kickTimerRef.current = window.setInterval(() => {
-      kick.triggerAttackRelease('C1', '8n')
-    }, interval)
+    if (Tone.getTransport().state !== 'started') {
+      Tone.getTransport().start()
+    }
   }
+
+  // ── hats (Tone.Loop) ────────────────────────────────────────────────────────
 
   const startHats = async () => {
     if (hatRef.current || !masterRef.current) return
@@ -319,14 +332,18 @@ export function DrumMachine() {
     hat.connect(masterRef.current)
     hatRef.current = hat
 
-    const bpm = 140
-    const interval = (60_000 / bpm) / 4 // 16th‑note hats
+    const loop = new (Tone.Loop as any)((time: number) => {
+      hat.triggerAttackRelease('16n', time)
+    }, '16n')
+    loop.start(0)
+    hatLoopRef.current = loop
 
-    hat.triggerAttackRelease('16n')
-    hatTimerRef.current = window.setInterval(() => {
-      hat.triggerAttackRelease('16n')
-    }, interval)
+    if (Tone.getTransport().state !== 'started') {
+      Tone.getTransport().start()
+    }
   }
+
+  // ── noise sweep ─────────────────────────────────────────────────────────────
 
   const startNoiseSweep = async () => {
     if (noiseOnRef.current || !masterRef.current) return
@@ -334,9 +351,9 @@ export function DrumMachine() {
 
     const Tone = await import('tone')
 
-    const noise = new (Tone.Noise as any)('white')
+    const noise  = new (Tone.Noise as any)('white')
     const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 300 })
-    const gain = new (Tone.Gain as any)(0.03)
+    const gain   = new (Tone.Gain as any)(0.03)
 
     noise.connect(filter)
     filter.connect(gain)
@@ -347,9 +364,9 @@ export function DrumMachine() {
 
     noise.start()
 
-    noiseRef.current = noise
+    noiseRef.current      = noise
     noiseFilterRef.current = filter
-    noiseLfoRef.current = lfo
+    noiseLfoRef.current    = lfo
   }
 
   // ── build ───────────────────────────────────────────────────────────────────
@@ -357,6 +374,9 @@ export function DrumMachine() {
   const handleBuild = async () => {
     if (loading) return
     const step = phase
+
+    // Unlock AudioContext synchronously in this gesture before any async work
+    await unlockAudio()
 
     setLoading(true)
 
@@ -367,20 +387,14 @@ export function DrumMachine() {
     addMessage('agent', STEP_WORK[step])
 
     const audioInit = step === 0
-      ? initAudio().then(() => { enableEnvelopesAndPolyrhythm() })
+      ? initAudio().then(() => enableEnvelopesAndPolyrhythm())
       : Promise.resolve()
 
     await Promise.all([audioInit, sleep(1200)])
 
-    if (step === 3) {
-      startKick()
-    }
-    if (step === 4) {
-      startHats()
-    }
-    if (step === 5) {
-      startNoiseSweep()
-    }
+    if (step === 3) await startKick()
+    if (step === 4) await startHats()
+    if (step === 5) await startNoiseSweep()
 
     await sleep(350)
     addMessage('agent', BUILD_STEPS[step].done)
@@ -403,7 +417,6 @@ export function DrumMachine() {
 
   return (
     <>
-      {/* Fixed mute */}
       {phase >= 1 && (
         <button
           onClick={toggleMute}
@@ -438,10 +451,39 @@ export function DrumMachine() {
         width:      '100%',
         fontFamily: 'ui-monospace, monospace',
         userSelect: 'none',
+        position:   'relative',
       }}>
+        {!audioReady && phase === 0 && (
+          <div
+            style={{
+              position:       'absolute',
+              inset:          0,
+              zIndex:         10,
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              background:     'rgba(255,255,255,0.85)',
+              cursor:         'pointer',
+            }}
+            onClick={async () => {
+              await unlockAudio()
+            }}
+          >
+            <span style={{
+              fontSize:      '11px',
+              color:         FG,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              border:        `1px solid ${FG}`,
+              padding:       '8px 16px',
+            }}>
+              tap to enable audio
+            </span>
+          </div>
+        )}
+
         <div className="dm-disclaimer">WORKFLOW SIMULATION</div>
         <div className="dm-panel">
-          {/* Left: chat */}
           <div className="dm-chat">
             <div className="dm-chat-scroll" ref={chatScrollRef}>
               {messages.map((m, i) => (
@@ -463,7 +505,6 @@ export function DrumMachine() {
             )}
           </div>
 
-          {/* Right: visual program */}
           <div className="dm-visual">
             {phase >= 1 && (
               <div className="dm-block">
