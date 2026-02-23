@@ -41,8 +41,8 @@ const BUILD_STEPS = [
     done:  'rolling hihats running',
   },
   {
-    label: 'add a quiet white noise lowpass sweep (not synced)',
-    done:  'white noise sweep running',
+    label: 'cut the hi hats and add a resonant filter sweep with white noise (not synced)',
+    done:  'hihats out — resonant white noise filter sweep running',
   },
 ]
 
@@ -52,7 +52,7 @@ const STEP_WORK = [
   'wiring amplitude controls…',
   'adding a bass drum…',
   'rolling hihats…',
-  'adding a quiet noise sweep…',
+  'cutting hihats, adding filter sweep…',
 ]
 
 type MsgRole = 'user' | 'agent' | 'note'
@@ -314,6 +314,7 @@ export function DrumMachine() {
       octaves: 6,
       envelope: { attack: 0.001, decay: 0.4, sustain: 0, release: 0.1 },
     })
+    kick.volume.value = -6
     kick.connect(masterRef.current)
     kickRef.current = kick
 
@@ -366,14 +367,14 @@ export function DrumMachine() {
     const Tone = await import('tone')
 
     const noise  = new (Tone.Noise as any)('white')
-    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 300 })
-    const gain   = new (Tone.Gain as any)(0.03)
+    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 400, Q: 6 })
+    const gain   = new (Tone.Gain as any)(0.05)
 
     noise.connect(filter)
     filter.connect(gain)
     gain.connect(masterRef.current)
 
-    const lfo = new (Tone.LFO as any)({ frequency: 0.03, min: 150, max: 2000 }).start()
+    const lfo = new (Tone.LFO as any)({ frequency: 0.12, min: 200, max: 8000, phase: 270, type: 'sine' }).start()
     lfo.connect(filter.frequency)
 
     noise.start()
@@ -408,7 +409,11 @@ export function DrumMachine() {
 
     if (step === 3) await startKick()
     if (step === 4) await startHats()
-    if (step === 5) await startNoiseSweep()
+    if (step === 5) {
+      if (hatLoopRef.current) { try { hatLoopRef.current.stop(); hatLoopRef.current.dispose() } catch { /* */ } hatLoopRef.current = null }
+      if (hatRef.current)     { try { hatRef.current.dispose() }                                catch { /* */ } hatRef.current = null }
+      await startNoiseSweep()
+    }
 
     await sleep(350)
     addMessage('agent', BUILD_STEPS[step].done)
