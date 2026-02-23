@@ -367,8 +367,8 @@ export function DrumMachine() {
     const Tone = await import('tone')
 
     const noise  = new (Tone.Noise as any)('white')
-    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 400 })
-    const gain   = new (Tone.Gain as any)(0.09)
+    const filter = new (Tone.Filter as any)({ type: 'lowpass', frequency: 400, Q: 6 })
+    const gain   = new (Tone.Gain as any)(0.05)
 
     noise.connect(filter)
     filter.connect(gain)
