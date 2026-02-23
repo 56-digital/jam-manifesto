@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-background: #0a0a0a;
+  --color-surface: #111111;
+  --color-border: #222222;
+  --color-text: #e0e0e0;
+  --color-dim: #444444;
+  --color-accent: #ffffff;
+  --color-kick: #ff4444;
+  --color-snare: #ff8800;
+  --color-hat: #44aaff;
+  --color-perc: #aa44ff;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #0a0a0a;
+  color: #e0e0e0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-weight: 400; letter-spacing: 0.05em; }
+h1 { font-size: 28px; margin-bottom: 8px; }
+h2 { font-size: 16px; color: #888; margin: 56px 0 16px; text-transform: uppercase; letter-spacing: 0.15em; }
+p { color: #999; margin-bottom: 20px; max-width: 600px; }
+a { color: #e0e0e0; }
+
+button { font-family: var(--font-mono); cursor: pointer; }
+input[type='range'] { cursor: pointer; }
