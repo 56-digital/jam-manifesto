@@ -53,32 +53,54 @@ export async function startEngine() {
   }
 
   const voices = ['kick', 'snare', 'hat', 'perc'] as const
-  seqs = voices.map((voice) =>
-    new Tone.Sequence(
-      (time: number, step: number) => {
-        const state = useMusicStore.getState()
-        // Update playhead (schedule in Tone's draw callback for sync)
-        Tone.getDraw().schedule(() => {
-          useMusicStore.getState().setCurrentStep(step)
-        }, time)
 
-        if (!state.patterns[voice][step]) return
-        const p = state.params[voice]
-
-        if (voice === 'kick') {
-          synths.kick.triggerAttackRelease('C1', p.decay, time)
-        } else if (voice === 'snare') {
-          synths.snare.triggerAttackRelease(p.decay, time)
-        } else if (voice === 'hat') {
-          synths.hat.triggerAttackRelease(p.decay, time)
-        } else if (voice === 'perc') {
-          synths.perc.triggerAttackRelease('G2', p.decay, time)
+  // Single sequence advances the playhead — only one needs to do this
+  const stepSeq = new Tone.Sequence(
+    (time: number, step: number) => {
+      // Schedule UI update near the audio event using Draw if available, else rAF
+      const updateStep = () => useMusicStore.getState().setCurrentStep(step)
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const Draw = (Tone as any).getDraw?.() ?? (Tone as any).Draw
+        if (Draw?.schedule) {
+          Draw.schedule(updateStep, time)
+        } else {
+          requestAnimationFrame(updateStep)
         }
-      },
-      Array.from({ length: 32 }, (_, i) => i),
-      '16n'
-    )
+      } catch {
+        requestAnimationFrame(updateStep)
+      }
+    },
+    Array.from({ length: 32 }, (_, i) => i),
+    '16n'
   )
+
+  seqs = [
+    stepSeq,
+    ...voices.map((voice) =>
+      new Tone.Sequence(
+        (time: number, step: number) => {
+          if (!synths[voice]) return
+          const state = useMusicStore.getState()
+          if (!state.patterns[voice][step]) return
+          const p = state.params[voice]
+          const dur = Math.max(0.05, p.decay)
+
+          if (voice === 'kick') {
+            synths.kick.triggerAttackRelease('C1', dur, time)
+          } else if (voice === 'snare') {
+            synths.snare.triggerAttackRelease(dur, time)
+          } else if (voice === 'hat') {
+            synths.hat.triggerAttackRelease(dur, time)
+          } else if (voice === 'perc') {
+            synths.perc.triggerAttackRelease('G2', dur, time)
+          }
+        },
+        Array.from({ length: 32 }, (_, i) => i),
+        '16n'
+      )
+    ),
+  ]
 
   Tone.getTransport().bpm.value = useMusicStore.getState().bpm
   seqs.forEach((s) => s.start(0))
@@ -89,8 +111,11 @@ export async function stopEngine() {
   if (typeof window === 'undefined') return
   const Tone = await import('tone')
   Tone.getTransport().stop()
-  seqs.forEach((s) => s.stop())
+  seqs.forEach((s) => { try { s.stop(); s.dispose() } catch { /* ignore */ } })
   seqs = []
+  // Reset so next startEngine call re-creates synths cleanly
+  initialized = false
+  synths = {}
 }
 
 export async function syncBpm(bpm: number) {

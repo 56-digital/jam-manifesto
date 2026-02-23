@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useMusicStore, PRESETS } from '@/lib/music-store'
 
+const FG  = '#273141'
+const DIM = '#7c8c96'
+
 interface Props {
   prompt: string
   preset: string
@@ -28,21 +31,21 @@ export function AgentPrompt({ prompt, preset, description }: Props) {
   return (
     <motion.div
       onClick={handleClick}
-      whileHover={{ borderColor: '#444' }}
+      whileHover={{ borderColor: FG }}
       style={{
         cursor:     state === 'applied' ? 'default' : 'pointer',
-        border:     '1px solid #222',
+        border:     `1px solid ${DIM}`,
         padding:    '14px 16px',
         margin:     '8px 0',
-        background: '#0d0d0d',
-        fontFamily: 'monospace',
+        background: '#fff',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         transition: 'border-color 0.15s',
       }}
     >
-      <div style={{ color: '#333', fontSize: '10px', letterSpacing: '0.1em', marginBottom: '6px', textTransform: 'uppercase' }}>
+      <div style={{ color: DIM, fontSize: '10px', letterSpacing: '0.1em', marginBottom: '6px', textTransform: 'uppercase' }}>
         agent prompt
       </div>
-      <div style={{ color: '#bbb', fontSize: '13px' }}>
+      <div style={{ color: FG, fontSize: '14px' }}>
         &ldquo;{prompt}&rdquo;
       </div>
 
@@ -53,13 +56,13 @@ export function AgentPrompt({ prompt, preset, description }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #1e1e1e' }}
+            style={{ marginTop: '10px', paddingTop: '10px', borderTop: `1px solid ${DIM}` }}
           >
-            <div style={{ color: '#44ff88', fontSize: '11px', marginBottom: '4px' }}>
-              ✓ applied — {description}
+            <div style={{ color: FG, fontSize: '11px', marginBottom: '4px' }}>
+              applied — {description}
             </div>
             {presetData && (
-              <div style={{ color: '#444', fontSize: '10px' }}>
+              <div style={{ color: DIM, fontSize: '10px' }}>
                 {presetData.bpm} bpm · {presetData.name.toLowerCase()}
               </div>
             )}

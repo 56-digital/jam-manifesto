@@ -15,18 +15,19 @@ export function MermaidDiagram({ chart }: Props) {
     import('mermaid').then((m) => {
       if (cancelled || !ref.current) return
       m.default.initialize({
-        theme: 'dark',
+        theme: 'base',
         themeVariables: {
-          background:         '#0a0a0a',
-          primaryColor:       '#1a1a1a',
-          primaryBorderColor: '#333',
-          primaryTextColor:   '#ccc',
-          lineColor:          '#444',
-          secondaryColor:     '#111',
-          tertiaryColor:      '#0d0d0d',
+          background:         '#fff',
+          primaryColor:       '#fff',
+          primaryBorderColor: '#273141',
+          primaryTextColor:   '#273141',
+          lineColor:          '#273141',
+          secondaryColor:     '#f0f0f0',
+          tertiaryColor:      '#fff',
+          edgeLabelBackground: '#fff',
           fontSize:           '12px',
         },
-        fontFamily: 'monospace',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       })
       m.default
         .render(`mermaid-${id}`, chart)
@@ -42,11 +43,13 @@ export function MermaidDiagram({ chart }: Props) {
     <div
       ref={ref}
       style={{
-        margin:     '28px 0',
-        padding:    '20px',
-        background: '#0d0d0d',
-        border:     '1px solid #1e1e1e',
-        overflowX:  'auto',
+        margin:      '40px 0',
+        padding:     '32px 24px',
+        background: '#fff',
+        border:     '4px solid #273141',
+        overflowX:   'auto',
+        display:     'flex',
+        justifyContent: 'center',
       }}
     />
   )

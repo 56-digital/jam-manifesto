@@ -1,35 +1,83 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-background: #0a0a0a;
-  --color-surface: #111111;
-  --color-border: #222222;
-  --color-text: #e0e0e0;
-  --color-dim: #444444;
-  --color-accent: #ffffff;
-  --color-kick: #ff4444;
-  --color-snare: #ff8800;
-  --color-hat: #44aaff;
-  --color-perc: #aa44ff;
-  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --color-background: #fff;
+  --color-surface: #f4f4f4;
+  --color-border: #273141;
+  --color-text: #273141;
+  --color-dim: #5a6e7e;
+  --color-accent: #273141;
+  --color-kick: #c0392b;
+  --color-snare: #b7660a;
+  --color-hat: #1a4fa0;
+  --color-perc: #5b2d8e;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Force light mode regardless of system preference */
+html {
+  color-scheme: light;
+}
+
 html, body {
-  background: #0a0a0a;
-  color: #e0e0e0;
-  font-family: var(--font-mono);
-  font-size: 13px;
+  background: #fff;
+  color: #273141;
+  font-family: var(--font-sans);
+  font-size: 16px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { font-weight: 400; letter-spacing: 0.05em; }
-h1 { font-size: 28px; margin-bottom: 8px; }
-h2 { font-size: 16px; color: #888; margin: 56px 0 16px; text-transform: uppercase; letter-spacing: 0.15em; }
-p { color: #999; margin-bottom: 20px; max-width: 600px; }
-a { color: #e0e0e0; }
+h1, h2, h3 { font-weight: 500; }
+h1 { font-size: 28px; margin-bottom: 8px; letter-spacing: -0.01em; }
+h2 { font-size: 12px; color: #4a5d6d; margin: 64px 0 20px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 400; }
+p { color: #273141; margin-bottom: 20px; }
+em { font-style: italic; color: #1a2535; }
+a { color: #273141; }
+hr { border: none; margin: 48px 0; }
 
-button { font-family: var(--font-mono); cursor: pointer; }
-input[type='range'] { cursor: pointer; }
+button { font-family: var(--font-sans); cursor: pointer; }
+input[type='range'] { cursor: pointer; accent-color: #273141; }
+::placeholder { color: #5a6e7e; }
+
+/* ── Manifesto layout ─────────────────────────────── */
+
+.manifesto {
+  width: 100%;
+  padding: 80px 0 160px;
+}
+
+/* Prose elements — constrained and centered */
+.manifesto > h1,
+.manifesto > h2,
+.manifesto > h3,
+.manifesto > p,
+.manifesto > ul,
+.manifesto > ol,
+.manifesto > blockquote,
+.manifesto > .eyebrow {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Full-width elements — images, interactive components */
+.manifesto > img {
+  width: 100%;
+  display: block;
+  margin: 32px 0;
+  border: 4px solid #273141;
+}
+
+/* Full-width checkerboard HR — 2 rows of 8px squares */
+.manifesto > hr {
+  width: 100%;
+  height: 16px;
+  background: conic-gradient(#273141 90deg, #fff 90deg 180deg, #273141 180deg 270deg, #fff 270deg) 0 0 / 16px 16px;
+  margin: 48px 0;
+}
