@@ -41,8 +41,8 @@ const BUILD_STEPS = [
     done:  'rolling hihats running',
   },
   {
-    label: 'add a quiet white noise lowpass sweep (not synced)',
-    done:  'white noise sweep running',
+    label: 'cut the hi hats and add a resonant filter sweep with white noise (not synced)',
+    done:  'hihats out — resonant white noise filter sweep running',
   },
 ]
 
@@ -52,7 +52,7 @@ const STEP_WORK = [
   'wiring amplitude controls…',
   'adding a bass drum…',
   'rolling hihats…',
-  'adding a quiet noise sweep…',
+  'cutting hihats, adding filter sweep…',
 ]
 
 type MsgRole = 'user' | 'agent' | 'note'
@@ -409,7 +409,11 @@ export function DrumMachine() {
 
     if (step === 3) await startKick()
     if (step === 4) await startHats()
-    if (step === 5) await startNoiseSweep()
+    if (step === 5) {
+      if (hatLoopRef.current) { try { hatLoopRef.current.stop(); hatLoopRef.current.dispose() } catch { /* */ } hatLoopRef.current = null }
+      if (hatRef.current)     { try { hatRef.current.dispose() }                                catch { /* */ } hatRef.current = null }
+      await startNoiseSweep()
+    }
 
     await sleep(350)
     addMessage('agent', BUILD_STEPS[step].done)
