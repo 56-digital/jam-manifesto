@@ -10,80 +10,67 @@ interface AnnotateProps {
 
 export function Annotate({ term, children }: AnnotateProps) {
   const [showTooltip, setShowTooltip] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [termTop, setTermTop] = useState(0)
   const spanRef = useRef<HTMLSpanElement>(null)
 
   const definition = definitions[term.toLowerCase()]
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  useEffect(() => {
     if (!showTooltip) return
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (spanRef.current && !spanRef.current.contains(event.target as Node)) {
+    if (isMobile && spanRef.current) {
+      const rect = spanRef.current.getBoundingClientRect()
+      setTermTop(rect.top)
+    }
+
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
+      if (spanRef.current && !spanRef.current.contains(e.target as Node)) {
         setShowTooltip(false)
       }
     }
 
-    document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
-  }, [showTooltip])
+    if (isMobile) {
+      document.addEventListener('touchstart', handleOutside)
+      return () => document.removeEventListener('touchstart', handleOutside)
+    } else {
+      document.addEventListener('click', handleOutside)
+      return () => document.removeEventListener('click', handleOutside)
+    }
+  }, [showTooltip, isMobile])
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault()
     e.stopPropagation()
-    setShowTooltip(!showTooltip)
+    setShowTooltip(prev => !prev)
   }
 
   return (
     <span
       ref={spanRef}
       className="annotate-term"
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
-      onClick={handleClick}
-      style={{
-        borderBottom: '1px dotted #666',
-        cursor: 'help',
-        position: 'relative'
-      }}
+      onMouseEnter={() => { if (!isMobile) setShowTooltip(true) }}
+      onMouseLeave={() => { if (!isMobile) setShowTooltip(false) }}
+      onTouchStart={handleTouchStart}
     >
       {children}
       {showTooltip && definition && (
-        <span
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#1a1a1a',
-            color: '#fff',
-            padding: '10px 14px',
-            borderRadius: '6px',
-            fontSize: '13px',
-            lineHeight: '1.5',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            maxWidth: '320px',
-            width: 'max-content',
-            marginBottom: '8px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            pointerEvents: 'none'
-          }}
-        >
-          {definition}
+        <>
           <span
-            style={{
-              position: 'absolute',
-              top: '100%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 0,
-              height: 0,
-              borderLeft: '6px solid transparent',
-              borderRight: '6px solid transparent',
-              borderTop: '6px solid #1a1a1a'
-            }}
-          />
-        </span>
+            className={`annotate-tooltip${isMobile ? ' mobile' : ''}`}
+            style={isMobile ? { top: `${termTop - 8}px`, transform: 'translateY(-100%)' } : {}}
+          >
+            {definition}
+          </span>
+          {!isMobile && <span className="annotate-triangle" />}
+        </>
       )}
     </span>
   )

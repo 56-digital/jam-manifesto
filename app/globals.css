@@ -97,3 +97,53 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
   background: conic-gradient(#273141 90deg, #fff 90deg 180deg, #273141 180deg 270deg, #fff 270deg) 0 0 / 16px 16px;
   margin: 96px 0;
 }
+
+/* Annotation tooltips */
+.annotate-term {
+  border-bottom: 1px dotted #666;
+  cursor: help;
+  position: relative;
+  display: inline;
+}
+
+.annotate-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-style: normal;
+  font-weight: normal;
+  width: 260px;
+  white-space: normal;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+
+.annotate-tooltip.mobile {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  width: auto;
+  max-width: none;
+  bottom: auto;
+}
+
+.annotate-triangle {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1a1a1a;
+  pointer-events: none;
+}
