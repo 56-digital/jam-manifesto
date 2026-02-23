@@ -57,7 +57,7 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 
 .manifesto {
   width: 100%;
-  padding: 80px 0 160px;
+  padding: 80px 0 0;
 }
 
 /* Prose elements — constrained and centered */
