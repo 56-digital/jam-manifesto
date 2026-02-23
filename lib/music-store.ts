@@ -117,11 +117,13 @@ interface MusicState {
   playing: boolean
   bpm: number
   currentStep: number
+  audioReady: boolean
   patterns: Record<VoiceName, boolean[]>
   params: VoiceParams
   setPlaying: (v: boolean) => void
   setBpm: (v: number) => void
   setCurrentStep: (v: number) => void
+  setAudioReady: (v: boolean) => void
   setStep: (voice: VoiceName, step: number, value: boolean) => void
   setParam: <V extends VoiceName>(voice: V, param: keyof VoiceParams[V], value: number) => void
   applyPreset: (key: string) => void
@@ -131,12 +133,14 @@ export const useMusicStore = create<MusicState>((set) => ({
   playing: false,
   bpm: 128,
   currentStep: -1,
+  audioReady: false,
   patterns: PRESETS.four_on_floor.patterns,
   params: PRESETS.four_on_floor.params,
 
   setPlaying: (v) => set({ playing: v }),
   setBpm: (v) => set({ bpm: v }),
   setCurrentStep: (v) => set({ currentStep: v }),
+  setAudioReady: (v) => set({ audioReady: v }),
 
   setStep: (voice, step, value) =>
     set((s) => ({

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useMusicStore, PRESETS } from '@/lib/music-store'
+import { unlockAudio } from '@/lib/audio-unlock'
 
 const FG      = '#273141'
 const DIM     = '#7c8c96'
@@ -52,16 +53,18 @@ export function AgentTerminal() {
   const [autoRunning, setAutoRunning] = useState(true)
   const [pending, setPending]         = useState(false)
   const bottomRef                     = useRef<HTMLDivElement>(null)
-  const applyPreset = useMusicStore((s) => s.applyPreset)
-  const setPlaying  = useMusicStore((s) => s.setPlaying)
+  const applyPreset  = useMusicStore((s) => s.applyPreset)
+  const setPlaying   = useMusicStore((s) => s.setPlaying)
+  const audioReady   = useMusicStore((s) => s.audioReady) // gates auto-demo audio
 
   const { displayed, done } = useTypewriter(autoRunning ? autoPrompt : '', 32)
 
+  // Auto-demo: cycles visually but only triggers audio if already unlocked
   useEffect(() => {
     if (!autoRunning || !done) return
     const current = PROMPTS[autoIdx]
     applyPreset(current.preset)
-    setPlaying(true)
+    if (audioReady) setPlaying(true)
     setHistory((h) => [...h, { prompt: current.text, response: RESPONSES[current.preset] }])
     const next = setTimeout(() => {
       const nextIdx = (autoIdx + 1) % PROMPTS.length
@@ -70,6 +73,24 @@ export function AgentTerminal() {
     }, 3200)
     return () => clearTimeout(next)
   }, [done, autoRunning]) // eslint-disable-line
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inputVal.trim() || pending) return
+    setAutoRunning(false)
+    setPending(true)
+    const preset = resolveInput(inputVal)
+    const submitted = inputVal
+    setInputVal('')
+
+    // Unlock audio synchronously in this gesture — no delay
+    await unlockAudio()
+    applyPreset(preset)
+    setPlaying(true)
+    const response = RESPONSES[preset] ?? `applied — ${PRESETS[preset]?.name ?? preset}`
+    setHistory((h) => [...h, { prompt: submitted, response }])
+    setPending(false)
+  }
 
   const resolveInput = (raw: string): string => {
     const lower = raw.toLowerCase()
@@ -86,23 +107,6 @@ export function AgentTerminal() {
     return 'sparse'
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputVal.trim() || pending) return
-    setAutoRunning(false)
-    setPending(true)
-    const preset = resolveInput(inputVal)
-    const submitted = inputVal
-    setInputVal('')
-    setTimeout(() => {
-      applyPreset(preset)
-      setPlaying(true)
-      const response = RESPONSES[preset] ?? `applied — ${PRESETS[preset]?.name ?? preset}`
-      setHistory((h) => [...h, { prompt: submitted, response }])
-      setPending(false)
-    }, 600)
-  }
-
   return (
     <div style={{
       background: '#fff',
@@ -111,8 +115,8 @@ export function AgentTerminal() {
       fontFamily: 'ui-monospace, monospace',
       fontSize: '12px',
       margin: '40px 0',
+      position: 'relative',
     }}>
-      {/* Header */}
       <div style={{
         padding: '8px 14px',
         borderBottom: `1px solid ${BORDER}`,
@@ -127,7 +131,6 @@ export function AgentTerminal() {
         <span style={{ color: DIM }}>esc to take over</span>
       </div>
 
-      {/* History */}
       <div style={{ padding: '14px', minHeight: '80px', maxHeight: '240px', overflowY: 'auto' }}>
         {history.map((item, i) => (
           <div key={i} style={{ marginBottom: '14px' }}>
@@ -160,7 +163,6 @@ export function AgentTerminal() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSubmit} style={{
         borderTop: `1px solid ${BORDER}`,
         display: 'flex',
