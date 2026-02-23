@@ -11,7 +11,7 @@
   --color-snare: #b7660a;
   --color-hat: #1a4fa0;
   --color-perc: #5b2d8e;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'SF Pro', 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
 }
 
@@ -26,16 +26,16 @@ html, body {
   background: #fff;
   color: #273141;
   font-family: var(--font-sans);
-  font-size: 16px;
-  letter-spacing: 0.018em;
-  line-height: 1.6;
+  font-size: 14px;
+  letter-spacing: 0.015em;
+  line-height: 1.57;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 { font-weight: 500; }
 h1 { font-size: 28px; margin-bottom: 8px; letter-spacing: -0.01em; }
 h2 { font-size: 12px; color: #4a5d6d; margin: 64px 0 20px; text-transform: uppercase; letter-spacing: 0.18em; font-weight: 400; }
-p { color: #273141; margin-bottom: 20px; }
+p { color: #273141; margin-bottom: 10px; }
 em { font-style: italic; color: #1a2535; }
 a { color: #273141; }
 hr { border: none; margin: 48px 0; }
@@ -69,7 +69,7 @@ input[type='range'] { cursor: pointer; accent-color: #273141; }
 .manifesto > ol,
 .manifesto > blockquote,
 .manifesto > .eyebrow {
-  max-width: 580px;
+  max-width: 520px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 24px;
